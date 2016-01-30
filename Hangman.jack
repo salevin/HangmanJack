@@ -1,0 +1,191 @@
+class Hangman {
+
+
+    // The word that we will be using
+    field String word;
+
+    // The number wrong
+    field int wrong;
+
+    // The letters tried
+    field String done;
+
+    // If we should exit application
+    field boolean exit;
+
+    /** Constructs a new Hangman Game. */
+    constructor Hangman new() {
+    
+        let word = "HANG";
+	let wrong = 0;
+        return this;
+    }
+
+    /** Deallocates the object's memory. */
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    /** Starts the game. Handles inputs from the user that control
+     *  the square's movement, direction and size. */
+    method void run() {
+        var char key;
+	var boolean hasKey;
+	var int x;
+	var boolean hasDone;
+
+        let exit = false;
+	let done = String.new(500);
+
+	do writeWord();
+
+	do makeNoose();
+
+        while (~exit) {
+            // waits for a key to be pressed.
+            let key = Keyboard.readChar();
+
+	    let hasDone = false;
+	    let x = 0;
+	    let hasKey = false;
+
+	    while (x < done.length()) {
+	    if (done.charAt(x) = key) {
+	    let hasDone = true;
+	    }
+	    let x = x + 1;
+	    }
+
+	    do done.appendChar(key);
+
+	    if (~hasDone){
+
+	    let x = 0;
+	    
+	    while (x < word.length()) {
+	    if (word.charAt(x) = key) {
+	    let hasKey = true;
+	    }
+	    let x = x + 1;
+	    }
+	    
+	    
+	    if (~hasKey) {
+	    do wrongLetter();
+	    }
+	    else {
+	    do writeWord();
+	    }
+
+	    if (wrong = 6){
+   	    do Output.moveCursor(12, 0);
+   	    do Output.printString("YOU LOST!!!11!!");
+ 	    do Sys.wait(100);
+     	    let exit = true;
+	    }
+
+	    
+	    }
+	    
+
+        }
+            
+        return;
+	}
+
+    /** Writes the correct new stick*/
+    method void wrongLetter() {
+        if (wrong = 0) {
+            do Screen.setColor(true);
+            do Screen.drawCircle(100, 25, 5);
+        }
+        if (wrong = 1) {
+            do Screen.setColor(true);
+            do Screen.drawLine(100, 30, 100, 60);
+        }
+        if (wrong = 2) {
+            do Screen.setColor(true);
+            do Screen.drawLine(100, 35, 90, 25);
+        }
+        if (wrong = 3) {
+            do Screen.setColor(true);
+            do Screen.drawLine(100, 35, 110, 25);
+        }
+	if (wrong = 4) {
+            do Screen.setColor(true);
+            do Screen.drawLine(100, 60, 110, 70);
+	}
+	if (wrong = 5) {
+            do Screen.setColor(true);
+            do Screen.drawLine(100, 60, 90, 70);
+	}
+
+	let wrong = wrong + 1;
+
+        do Sys.wait(5); // Delays the next movement.
+        return;
+    }
+
+    /** Writes new word */
+    method void writeWord() {
+
+    var int x;
+    var int y;
+    var boolean hasChar;
+    var int hasRight;
+
+
+    do Output.moveCursor(10, 0);
+
+    let x = 0;
+    let hasRight = 0;
+    
+    while (x < word.length()) {
+
+    let y = 0;
+    let hasChar = false;
+
+    while (y < done.length()) {
+    if (word.charAt(x) = done.charAt(y)) {
+    let hasChar = true;
+    }
+    let y = y + 1;
+    }
+
+    if (hasChar){
+    let hasRight = hasRight + 1;
+    do Output.printChar(word.charAt(x));
+    }
+    else {
+    do Output.printString("_");
+    }
+
+    let x = x + 1;
+    }
+
+    if (word.length() = hasRight){
+    do Output.moveCursor(12, 0);
+    do Output.printString("YOU WON!!!11!!");
+    do Sys.wait(100);
+    let exit = true;
+    }
+    else{
+    do Output.moveCursor(0,0);
+    do Output.printString(done);
+    }
+
+    return;
+    }
+
+    method void makeNoose() {
+    do Screen.setColor(true);
+    do Screen.drawLine(70, 15, 100, 15);
+    do Screen.drawLine(100, 15, 100, 20);
+    do Screen.drawLine(70, 15, 70, 75);
+    do Screen.drawLine(66, 75, 74, 75);
+
+    return;
+    }
+
+}
